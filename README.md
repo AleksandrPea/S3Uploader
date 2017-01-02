@@ -1,2 +1,2 @@
 # S3Uploader
-Simple AWS S3 uploader.
+To start using application, please fill <b>S3Credentials</b> file with relevant information.
