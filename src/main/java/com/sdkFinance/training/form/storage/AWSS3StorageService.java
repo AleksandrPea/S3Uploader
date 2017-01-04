@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 
 @Service
-@Primary
 public class AWSS3StorageService implements StorageService {
 
     private AmazonS3Client s3Client;
@@ -33,17 +32,17 @@ public class AWSS3StorageService implements StorageService {
         if (file.isEmpty()) {
             throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
         } else {
-            File simpleFile = new File(AWSS3StorageService.class.getResource("").getPath()+
-                    file.getOriginalFilename());
+            File tempFile = null;
             try {
-                file.transferTo(simpleFile);
+                tempFile = File.createTempFile("temp-file", "tmp");
+                file.transferTo(tempFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             PutObjectRequest putRequest = new PutObjectRequest(bucketName,
-                    file.getOriginalFilename(), simpleFile);
+                    file.getOriginalFilename(), tempFile);
             PutObjectResult response = s3Client.putObject(putRequest);
-            simpleFile.delete();
+            tempFile.delete();
             return response.getVersionId();
         }
     }
